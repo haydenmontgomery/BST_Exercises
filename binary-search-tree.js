@@ -154,15 +154,46 @@ class BinarySearchTree {
    * Returns the removed node. */
 
   remove(val) {
-    let node = this.findRecursively(val);
-    let parent = this.findParent(val);
-    console.log("Node",node);
-    console.log("Parent",parent);
-    if (node.right) {
-      let leftChild = node.left;
-      //TO FINISH: Have the test for child values and make them the new children of the parent.
-    }
+    // Tree is empty
+    if (!this.root) return null; 
+
+    // Helper to find the minimum value in a subtree
+    const findMin = (node) => {
+        while (node.left) node = node.left;
+        return node;
+    };
+
+    // Recursive function to remove a node
+    const removeNode = (node, val) => {
+      // Base case: node not found
+        if (!node) return null; 
+
+        if (val < node.val) {
+            // Go left
+            node.left = removeNode(node.left, val); 
+        } else if (val > node.val) {
+            // Go right
+            node.right = removeNode(node.right, val); 
+        } else {
+            // Node found, handle three cases:
+            if (!node.left && !node.right) return null;
+            if (!node.left) return node.right;         
+            if (!node.right) return node.left;         
+
+            // Two children
+            const successor = findMin(node.right);   
+            node.val = successor.val;                
+            node.right = removeNode(node.right, successor.val); 
+        }
+        // Return updated subtree
+        return node; 
+    };
+
+    // Start removal at the root
+    this.root = removeNode(this.root, val); 
+    return this.root;
   }
+
 
   /** Further Study!
    * isBalanced(): Returns true if the BST is balanced, false otherwise. */
@@ -177,21 +208,6 @@ class BinarySearchTree {
 
   findSecondHighest() {
     
-  }
-
-  //Used for the remove function
-  findParent(val) {
-    let parent;
-    let currentNode = this.root;
-    while(currentNode.val !== val) {
-      parent = currentNode;
-      if(currentNode.val > val) {
-        currentNode = currentNode.left;
-      } else {
-        currentNode = currentNode.right;
-      }
-    }
-    return parent;
   }
 }
 
